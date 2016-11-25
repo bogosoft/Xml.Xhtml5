@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bogosoft.Xml, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bogosoft.Xml.1.0.0.3\lib\net452\Bogosoft.Xml.dll</HintPath>
+      <HintPath>..\packages\Bogosoft.Xml.1.0.0.4\lib\net452\Bogosoft.Xml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
