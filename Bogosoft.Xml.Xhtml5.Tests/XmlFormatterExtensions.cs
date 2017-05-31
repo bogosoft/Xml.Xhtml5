@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Bogosoft.Xml.Tests
+namespace Bogosoft.Xml.Xhtml5.Tests
 {
     internal static class XmlFormatterExtensions
     {

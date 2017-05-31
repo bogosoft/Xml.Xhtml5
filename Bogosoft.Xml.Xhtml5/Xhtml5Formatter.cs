@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Bogosoft.Xml
+namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
     /// A specialized derived type of <see cref="XmlFormatter"/> suited to correctly formatting
@@ -24,6 +24,7 @@ namespace Bogosoft.Xml
             "i",
             "p",
             "script",
+            "td",
             "textarea"
         };
 
@@ -41,7 +42,7 @@ namespace Bogosoft.Xml
             CancellationToken token
             )
         {
-            await writer.WriteAsync("<!DOCTYPE html>");
+            await writer.WriteAsync("<!DOCTYPE html>", token);
 
             await base.FormatDocumentAsync(document, writer, token);
         }
@@ -59,9 +60,7 @@ namespace Bogosoft.Xml
             CancellationToken token
             )
         {
-            token.ThrowIfCancellationRequested();
-
-            return writer.WriteAsync(String.Empty);
+            return writer.WriteAsync(String.Empty, token);
         }
 
         /// <summary>
@@ -80,14 +79,14 @@ namespace Bogosoft.Xml
         {
             if(!element.HasChildNodes && ShouldNotSelfClose.Contains(element.Name))
             {
-                await writer.WriteAsync("<" + element.Name);
+                await writer.WriteAsync("<" + element.Name, token);
 
                 foreach(XmlAttribute a in element.Attributes)
                 {
-                    await this.FormatAttributeAsync(a, writer, indent, token);
+                    await FormatAttributeAsync(a, writer, indent, token);
                 }
 
-                await writer.WriteAsync("></" + element.Name + ">");
+                await writer.WriteAsync("></" + element.Name + ">", token);
             }
             else
             {
@@ -108,9 +107,7 @@ namespace Bogosoft.Xml
             CancellationToken token
             )
         {
-            token.ThrowIfCancellationRequested();
-
-            return writer.WriteAsync(String.Empty);
+            return writer.WriteAsync(String.Empty, token);
         }
     }
 }

@@ -3,7 +3,7 @@ using Should;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Bogosoft.Xml.Tests
+namespace Bogosoft.Xml.Xhtml5.Tests
 {
     [TestFixture, Category("Unit")]
     public class Xhtml5FormatterTests
