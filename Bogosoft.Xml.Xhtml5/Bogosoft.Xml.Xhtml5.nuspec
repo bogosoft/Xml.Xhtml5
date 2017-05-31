@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<authors>Clayton Roth</authors>
-		<description>Additional XML functionality related to XHTML5 documents.</description>
-		<id>Bogosoft.Xml.Xhtml5</id>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<version>1.0.0</version>
+		<authors>$author$</authors>
+		<description>$description$</description>
+		<id>$id$</id>
+		<owners>$author$</owners>
+		<projectUrl>https://github.com/bogosoft/Xml.Xhtml5</projectUrl>
+		<title>$id$</title>
+		<version>$version$</version>
 	</metadata>
 </package>
