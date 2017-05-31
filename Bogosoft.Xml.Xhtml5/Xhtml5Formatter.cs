@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -10,7 +11,7 @@ namespace Bogosoft.Xml
     /// A specialized derived type of <see cref="XmlFormatter"/> suited to correctly formatting
     /// the XML serialization of HTML 5 (XHTML 5).
     /// </summary>
-    public class Xhtml5Formatter : XmlFormatter
+    public class Xhtml5Formatter : StandardXmlFormatter
     {
         /// <summary>
         /// Get an array of element names that indicate that their respective elements
@@ -21,6 +22,7 @@ namespace Bogosoft.Xml
             "b",
             "div",
             "i",
+            "p",
             "script",
             "textarea"
         };
@@ -36,12 +38,12 @@ namespace Bogosoft.Xml
         protected override async Task FormatDocumentAsync(
             XmlDocument document,
             TextWriter writer,
-            String indent
+            CancellationToken token
             )
         {
             await writer.WriteAsync("<!DOCTYPE html>");
 
-            await base.FormatDocumentAsync(document, writer, indent);
+            await base.FormatDocumentAsync(document, writer, token);
         }
 
         /// <summary>
@@ -51,12 +53,15 @@ namespace Bogosoft.Xml
         /// <param name="doctype">An <see cref="XmlDocumentType"/> to format.</param>
         /// <param name="writer">A target <see cref="TextWriter"/> to format to.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task FormatDocumentTypeAsync(
+        protected override Task FormatDocumentTypeAsync(
             XmlDocumentType doctype,
-            TextWriter writer
+            TextWriter writer,
+            CancellationToken token
             )
         {
-            await writer.WriteAsync(String.Empty);
+            token.ThrowIfCancellationRequested();
+
+            return writer.WriteAsync(String.Empty);
         }
 
         /// <summary>
@@ -69,7 +74,8 @@ namespace Bogosoft.Xml
         protected override async Task FormatElementAsync(
             XmlElement element,
             TextWriter writer,
-            String indent
+            String indent,
+            CancellationToken token
             )
         {
             if(!element.HasChildNodes && ShouldNotSelfClose.Contains(element.Name))
@@ -78,14 +84,14 @@ namespace Bogosoft.Xml
 
                 foreach(XmlAttribute a in element.Attributes)
                 {
-                    await this.FormatAttributeAsync(a, writer, indent);
+                    await this.FormatAttributeAsync(a, writer, indent, token);
                 }
 
                 await writer.WriteAsync("></" + element.Name + ">");
             }
             else
             {
-                await base.FormatElementAsync(element, writer, indent);
+                await base.FormatElementAsync(element, writer, indent, token);
             }
         }
 
@@ -96,12 +102,15 @@ namespace Bogosoft.Xml
         /// <param name="declaration">An <see cref="XmlDeclaration"/> to format.</param>
         /// <param name="writer">A target <see cref="TextWriter"/> to format to.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task FormatXmlDeclarationAsync(
+        protected override Task FormatXmlDeclarationAsync(
             XmlDeclaration declaration,
-            TextWriter writer
+            TextWriter writer,
+            CancellationToken token
             )
         {
-            await writer.WriteAsync(String.Empty);
+            token.ThrowIfCancellationRequested();
+
+            return writer.WriteAsync(String.Empty);
         }
     }
 }
