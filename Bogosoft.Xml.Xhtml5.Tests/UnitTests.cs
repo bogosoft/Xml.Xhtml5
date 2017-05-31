@@ -57,7 +57,7 @@ namespace Bogosoft.Xml.Tests
 
             meta.SetAttribute("charset", "utf-8");
 
-            var formatter = new Xhtml5Formatter { Indent = "    ", LBreak = "\r\n" };
+            var formatter = new Xhtml5Formatter { Indent = "    ", LBreak = "\n" };
 
             var formatted = await formatter.ToStringAsync(document);
 
