@@ -79,7 +79,7 @@ namespace Bogosoft.Xml.Xhtml5
         {
             if(!element.HasChildNodes && ShouldNotSelfClose.Contains(element.Name))
             {
-                await writer.WriteAsync("<" + element.Name, token);
+                await writer.WriteAsync(LBreak + Indent + "<" + element.Name, token);
 
                 foreach(XmlAttribute a in element.Attributes)
                 {
