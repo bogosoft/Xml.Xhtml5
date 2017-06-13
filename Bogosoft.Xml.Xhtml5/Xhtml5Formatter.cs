@@ -24,6 +24,7 @@ namespace Bogosoft.Xml.Xhtml5
             "i",
             "p",
             "script",
+            "span",
             "td",
             "textarea"
         };
@@ -42,7 +43,10 @@ namespace Bogosoft.Xml.Xhtml5
             CancellationToken token
             )
         {
-            await writer.WriteAsync("<!DOCTYPE html>", token);
+            if(document.DocumentElement?.Name == "html")
+            {
+                await writer.WriteAsync("<!DOCTYPE html>", token);
+            }
 
             await base.FormatDocumentAsync(document, writer, token);
         }
