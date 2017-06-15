@@ -8,7 +8,7 @@ using System.Xml;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// A specialized derived type of <see cref="XmlFormatter"/> suited to correctly formatting
+    /// A specialized derived type of <see cref="IFormatXml"/> suited to correctly formatting
     /// the XML serialization of HTML 5 (XHTML 5).
     /// </summary>
     public class Xhtml5Formatter : StandardXmlFormatter
@@ -35,8 +35,10 @@ namespace Bogosoft.Xml.Xhtml5
         /// </summary>
         /// <param name="document">An <see cref="XmlDocument"/> to format.</param>
         /// <param name="writer">A target <see cref="TextWriter"/> to format to.</param>
-        /// <param name="indent">An <see cref="String"/> representing the current indentation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation.
+        /// </returns>
         protected override async Task FormatDocumentAsync(
             XmlDocument document,
             TextWriter writer,
@@ -57,7 +59,10 @@ namespace Bogosoft.Xml.Xhtml5
         /// </summary>
         /// <param name="doctype">An <see cref="XmlDocumentType"/> to format.</param>
         /// <param name="writer">A target <see cref="TextWriter"/> to format to.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation.
+        /// </returns>
         protected override Task FormatDocumentTypeAsync(
             XmlDocumentType doctype,
             TextWriter writer,
@@ -73,7 +78,10 @@ namespace Bogosoft.Xml.Xhtml5
         /// <param name="element">An <see cref="XmlElement"/> to format.</param>
         /// <param name="writer">A target <see cref="TextWriter"/> to format to.</param>
         /// <param name="indent">An <see cref="String"/> representing the current indentation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation.
+        /// </returns>
         protected override async Task FormatElementAsync(
             XmlElement element,
             TextWriter writer,
@@ -104,7 +112,10 @@ namespace Bogosoft.Xml.Xhtml5
         /// </summary>
         /// <param name="declaration">An <see cref="XmlDeclaration"/> to format.</param>
         /// <param name="writer">A target <see cref="TextWriter"/> to format to.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation.
+        /// </returns>
         protected override Task FormatXmlDeclarationAsync(
             XmlDeclaration declaration,
             TextWriter writer,
