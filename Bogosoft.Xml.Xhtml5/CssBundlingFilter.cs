@@ -13,7 +13,7 @@ namespace Bogosoft.Xml.Xhtml5
     /// <summary>
     /// An XHTML5 document filter strategy that bundles multiple CSS files into a single file.
     /// </summary>
-    public class CssBundlingFilter : IFilter
+    public class CssBundlingFilter : IFilterXml
     {
         /// <summary>
         /// Get or set the hashing strategy associated with the current filter.

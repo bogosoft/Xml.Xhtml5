@@ -14,7 +14,7 @@ namespace Bogosoft.Xml.Xhtml5
     /// copies them to a local cache path and replaces references to remote files with their
     /// cached counterpart paths. References to remote files are expected to be in attributes only.
     /// </summary>
-    public class RemoteFileCachingFilter : IFilter
+    public class RemoteFileCachingFilter : IFilterXml
     {
         /// <summary>
         /// Get or set the absolute physical (local) path to a directory where locally
