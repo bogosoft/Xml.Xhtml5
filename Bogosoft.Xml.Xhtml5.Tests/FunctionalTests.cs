@@ -19,6 +19,13 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         [TestCase]
         public async Task RemoteFileCachingFilterWorksAsExpected()
         {
+            var filepath = Path.Combine(PhysicalCachePath, Path.GetFileName(Bootstrap));
+
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+
             var document = new XmlDocument();
 
             var html = document.AppendElement("html");
@@ -33,6 +40,8 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             var unfiltered = await formatter.ToStringAsync(document);
 
+            File.Exists(filepath).ShouldBeFalse();
+
             unfiltered.ShouldEqual($@"<!DOCTYPE html><html><head><link href=""{Bootstrap}""/></head></html>");
 
             var filter = new RemoteFileCachingFilter(PhysicalCachePath, VirtualCachePath, "/html/head/link/@href");
@@ -40,6 +49,8 @@ namespace Bogosoft.Xml.Xhtml5.Tests
             formatter.With(filter);
 
             var filtered = await formatter.ToStringAsync(document);
+
+            File.Exists(filepath).ShouldBeTrue();
 
             var uri = $"{VirtualCachePath}/{Path.GetFileName(Bootstrap)}";
 
