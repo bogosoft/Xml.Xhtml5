@@ -89,7 +89,7 @@ namespace Bogosoft.Xml.Xhtml5
                                      .Where(x => x.NodeType == XmlNodeType.Attribute)
                                      .Select(x => x as XmlAttribute);
 
-            string url;
+            string filename, filepath, url;
 
             using (var client = new HttpClient())
             {
@@ -102,20 +102,20 @@ namespace Bogosoft.Xml.Xhtml5
                         continue;
                     }
 
+                    filename = Path.GetFileName(url);
+
+                    attribute.Value = $"{VirtualCachePath}/{filename}";
+
+                    filepath = Path.Combine(PhysicalCachePath, filename);
+
+                    if (File.Exists(filepath))
+                    {
+                        continue;
+                    }
+
                     using (var response = await client.GetAsync(url, token))
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            continue;
-                        }
-
-                        var filename = Path.GetFileName(url);
-
-                        attribute.Value = $"{VirtualCachePath}/{filename}";
-
-                        var filepath = Path.Combine(PhysicalCachePath, filename);
-
-                        if (File.Exists(filepath))
                         {
                             continue;
                         }
