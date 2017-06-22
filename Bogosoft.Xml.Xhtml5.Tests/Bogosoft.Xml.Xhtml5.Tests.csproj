@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bogosoft.Hashing, Version=1.2.0.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bogosoft.Hashing.1.2.0.7\lib\net452\Bogosoft.Hashing.dll</HintPath>
+    </Reference>
+    <Reference Include="Bogosoft.Hashing.Cryptography, Version=1.1.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bogosoft.Hashing.Cryptography.1.1.0.4\lib\net452\Bogosoft.Hashing.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="Bogosoft.Xml, Version=1.2.3.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bogosoft.Xml.1.2.3.8\lib\net452\Bogosoft.Xml.dll</HintPath>
     </Reference>
@@ -42,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />

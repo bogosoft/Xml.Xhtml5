@@ -137,14 +137,17 @@ namespace Bogosoft.Xml.Xhtml5
                 return;
             }
 
-            using (var client = new HttpClient())
+            string srcpath;
+
             using (var output = new FileStream(filepath, FileMode.Create, FileAccess.Write))
             {
                 foreach(var x in locations)
                 {
-                    using (var source = await GetStreamAsync(x, client, token))
+                    srcpath = Path.Combine(PhysicalApplicationPath, x);
+
+                    using (var source = new FileStream(srcpath, FileMode.Open, FileAccess.Read))
                     {
-                        await source.CopyToAsync(output);
+                        await source.CopyToAsync(output, token);
                     }
                 }
             }
