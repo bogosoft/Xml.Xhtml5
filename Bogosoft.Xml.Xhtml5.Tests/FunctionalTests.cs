@@ -3,6 +3,7 @@ using Bogosoft.Hashing.Cryptography;
 using NUnit.Framework;
 using Should;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,8 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         static string PhysicalCachePath => Environment.GetEnvironmentVariable("TEMP");
 
         const string VirtualCachePath = "content/cached";
+
+        static string TempPath = Environment.GetEnvironmentVariable("TEMP");
 
         [TestCase]
         public async Task CssBundlingFilterWorksAsExpected()
@@ -81,6 +84,65 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         }
 
         [TestCase]
+        public async Task JavaScriptBundlingFilterCanBundleAtLeastTwoFiles()
+        {
+            var files = new[] { "one.js", "two.js" };
+
+            foreach(var x in files.Select(ToAbsolutePath))
+            {
+                if (File.Exists(x))
+                {
+                    File.Delete(x);
+                }
+
+                using (var stream = new FileStream(x, FileMode.Create, FileAccess.Write))
+                using (var writer = new StreamWriter(stream))
+                {
+                    await writer.WriteAsync("// I am a comment.\r\n");
+                }
+            }
+
+            var test = new StringBuilder("<!DOCTYPE html><html><head>");
+
+            var document = new XmlDocument();
+
+            var head = document.AppendElement("html").AppendElement("head");
+
+            foreach(var x in files)
+            {
+                head.AppendElement("script").SetAttribute("src", x);
+
+                test.Append($@"<script src=""{x}""></script>");
+            }
+
+            test.Append("</head></html>");
+
+            var formatter = new Xhtml5Formatter();
+
+            test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
+
+            var filter = new JavascriptBundlingFilter(
+                ToRelativeUri,
+                ToPhysicalPath,
+                ToBundledFilepath,
+                "/html/head"
+                );
+
+            formatter.With(filter);
+
+            test.Clear();
+
+            test.Append($@"<!DOCTYPE html><html><head><script src=""");
+
+            test.Append(ToRelativeUri(ToBundledFilepath(files)));
+
+            test.Append(@"""></script></head></html>");
+            var expected = test.ToString();
+            var actual = await formatter.ToStringAsync(document);
+            test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
+        }
+
+        [TestCase]
         public async Task RemoteFileCachingFilterWorksAsExpected()
         {
             var filepath = Path.Combine(PhysicalCachePath, Path.GetFileName(Bootstrap));
@@ -124,6 +186,23 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         static string ToAbsolutePath(string filename)
         {
             return Path.Combine(PhysicalCachePath, filename);
+        }
+
+        static string ToBundledFilepath(IEnumerable<string> uris)
+        {
+            var hash = CryptoHashStrategy.MD5.Compute(uris).ToHexString();
+
+            return Path.Combine(TempPath, $"{hash}.js");
+        }
+
+        static string ToPhysicalPath(string uri)
+        {
+            return Path.Combine(Environment.GetEnvironmentVariable("TEMP"), uri);
+        }
+
+        static string ToRelativeUri(string filepath)
+        {
+            return $"{VirtualCachePath}/{Path.GetFileName(filepath)}";
         }
     }
 }

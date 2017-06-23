@@ -36,6 +36,9 @@
     <Reference Include="Bogosoft.Hashing.Cryptography, Version=1.1.0.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bogosoft.Hashing.Cryptography.1.1.0.4\lib\net452\Bogosoft.Hashing.Cryptography.dll</HintPath>
     </Reference>
+    <Reference Include="Bogosoft.Mapping, Version=1.1.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bogosoft.Mapping.1.1.0.9\lib\net452\Bogosoft.Mapping.dll</HintPath>
+    </Reference>
     <Reference Include="Bogosoft.Xml, Version=1.2.3.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bogosoft.Xml.1.2.3.8\lib\net452\Bogosoft.Xml.dll</HintPath>
     </Reference>
