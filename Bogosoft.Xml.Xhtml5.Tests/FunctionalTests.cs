@@ -205,7 +205,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
         static string ToRelativeUri(string filepath)
         {
-            return $"{VirtualCachePath}/{Path.GetFileName(filepath)}";
+            return $"content/cached/{Path.GetFileName(filepath)}";
         }
     }
 }
