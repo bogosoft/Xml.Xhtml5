@@ -5,8 +5,7 @@ using Bogosoft.Mapping;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// An implementation of the <see cref="BundlingFilterBase"/> class that bundles
-    /// multiple JavaScript files into a single file.
+    /// An XHTML5 document filter strategy that bundles multiple JavaScript files into a single file.
     /// </summary>
     public class JavascriptBundlingFilter : BundlingFilterBase
     {
