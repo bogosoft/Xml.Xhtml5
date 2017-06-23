@@ -61,24 +61,17 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
 
-            var algorithm = CryptoHashStrategy.MD5;
-
-            var filter = new CssBundlingFilter(
-                PhysicalCachePath,
-                VirtualCachePath,
-                PhysicalCachePath,
-                algorithm
-                );
+            var filter = new CssBundlingFilter(ToRelativeUri, ToPhysicalPath, ToBundledCssFilepath);
 
             formatter.With(filter);
 
             test.Clear();
 
-            test.Append($@"<!DOCTYPE html><html><head><link href=""{VirtualCachePath}/");
+            test.Append($@"<!DOCTYPE html><html><head><link href=""");
 
-            test.Append(algorithm.Compute(files).ToHexString());
+            test.Append(ToRelativeUri(ToBundledCssFilepath(files)));
 
-            test.Append(@".css"" rel=""stylesheet""/></head></html>");
+            test.Append(@""" rel=""stylesheet""/></head></html>");
 
             test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
         }
@@ -124,7 +117,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
             var filter = new JavascriptBundlingFilter(
                 ToRelativeUri,
                 ToPhysicalPath,
-                ToBundledFilepath,
+                ToBundledJsFilepath,
                 "/html/head"
                 );
 
@@ -134,7 +127,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             test.Append($@"<!DOCTYPE html><html><head><script src=""");
 
-            test.Append(ToRelativeUri(ToBundledFilepath(files)));
+            test.Append(ToRelativeUri(ToBundledJsFilepath(files)));
 
             test.Append(@"""></script></head></html>");
             var expected = test.ToString();
@@ -188,11 +181,21 @@ namespace Bogosoft.Xml.Xhtml5.Tests
             return Path.Combine(PhysicalCachePath, filename);
         }
 
-        static string ToBundledFilepath(IEnumerable<string> uris)
+        static string ToBundledCssFilepath(IEnumerable<string> uris)
+        {
+            return ToBundledFilepath(uris, "css");
+        }
+
+        static string ToBundledFilepath(IEnumerable<string> uris, string extension)
         {
             var hash = CryptoHashStrategy.MD5.Compute(uris).ToHexString();
 
-            return Path.Combine(TempPath, $"{hash}.js");
+            return Path.Combine(TempPath, $"{hash}.{extension}");
+        }
+
+        static string ToBundledJsFilepath(IEnumerable<string> uris)
+        {
+            return ToBundledFilepath(uris, "js");
         }
 
         static string ToPhysicalPath(string uri)

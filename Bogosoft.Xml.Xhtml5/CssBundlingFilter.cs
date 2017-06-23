@@ -1,181 +1,81 @@
-﻿using Bogosoft.Hashing;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml;
+using Bogosoft.Mapping;
 
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
     /// An XHTML5 document filter strategy that bundles multiple CSS files into a single file.
     /// </summary>
-    public class CssBundlingFilter : IFilterXml
+    public class CssBundlingFilter : BundlingFilterBase
     {
         /// <summary>
-        /// Get or set the hashing strategy associated with the current filter.
+        /// Get the name of the attribute on elements of the <see cref="TargettedElement"/> type
+        /// which contains the actual reference to a resource to bundle.
         /// </summary>
-        protected IHash HashStrategy;
+        protected override string TargettedAttribute => "href";
 
         /// <summary>
-        /// Get or set the local filepath associated with the current web application.
+        /// Get the XPath expression that will be used to gather all candidate elements for bundling.
         /// </summary>
-        protected string PhysicalApplicationPath;
+        protected override string TargettedContainerXPath => "/html/head";
 
         /// <summary>
-        /// Get or set the local filepath for cached files.
+        /// Get the name of the element corresponding to a resource to bundle.
         /// </summary>
-        protected string PhysicalCachePath;
-
-        /// <summary>
-        /// Get or set the virtual filepath of the associated web application.
-        /// </summary>
-        protected string VirtualApplicationPath;
+        protected override string TargettedElement => "link";
 
         /// <summary>
         /// Create a new instance of the <see cref="CssBundlingFilter"/> class.
         /// </summary>
-        /// <param name="physicalApplicationPath">
-        /// A value corresponding to the physical directory within which the current web application is running.
+        /// <param name="physicalPathToRelativeUriMapper">
+        /// A strategy for mapping a physical path on the local filesystem to a relative URI.
         /// </param>
-        /// <param name="virtualApplicationPath">
-        /// A value corresponding to the virtual directory within which the current web application is running.
+        /// <param name="relativeUriToPhysicalPathMapper">
+        /// A strategy for mapping a relative URI to a physical path on the local filesystem.
         /// </param>
-        /// <param name="physicalCachePath">
-        /// A value corresponding to the local filesystem directory where cached files are to be stored.
+        /// <param name="bundledFilepathMapper">
+        /// A strategy for mapping a relative URI collection to the absolute filepath
+        /// of a resource to bundle.
         /// </param>
-        /// <param name="hashStrategy">A hashing strategy.</param>
         public CssBundlingFilter(
-            string physicalApplicationPath,
-            string virtualApplicationPath,
-            string physicalCachePath,
-            IHash hashStrategy
+            Mapper<string, string> physicalPathToRelativeUriMapper,
+            Mapper<string, string> relativeUriToPhysicalPathMapper,
+            Mapper<IEnumerable<string>, string> bundledFilepathMapper
             )
+            : base(physicalPathToRelativeUriMapper, relativeUriToPhysicalPathMapper, bundledFilepathMapper)
         {
-            HashStrategy = hashStrategy;
-            PhysicalApplicationPath = physicalApplicationPath;
-            PhysicalCachePath = physicalCachePath;
-            VirtualApplicationPath = virtualApplicationPath;
         }
 
         /// <summary>
-        /// Filter a given XML document.
+        /// Append an element representing the bundled resource to a given container.
         /// </summary>
-        /// <param name="document">A document to filter.</param>
-        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation.
-        /// </returns>
-        public async Task FilterAsync(XmlDocument document, CancellationToken token)
-        {
-            var head = document.SelectNodes("/html/head").Cast<XmlNode>().FirstOrDefault();
-
-            if(head == null)
-            {
-                return;
-            }
-
-            var attributes = head.SelectNodes("link")
-                                 .Cast<XmlNode>()
-                                 .Where(x => x.NodeType == XmlNodeType.Element)
-                                 .Select(x => x as XmlElement)
-                                 .Where(x => x.HasAttribute("href"));
-
-            var locations = new List<string>();
-
-            string href;
-
-            XmlNode last = null;
-
-            foreach(var x in attributes)
-            {
-                href = x.GetAttribute("href");
-
-                if (!href.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                if (x.HasAttribute("data-bundle") && x.GetAttribute("data-bundle").ToLower() == "false")
-                {
-                    x.RemoveAttribute("data-bundle");
-
-                    continue;
-                }
-
-                locations.Add(href);
-
-                last = head.RemoveChild(x);
-            }
-
-            if(locations.Count < 2)
-            {
-                if(locations.Count == 1)
-                {
-                    head.AppendChild(last);
-                }
-
-                return;
-            }
-
-            var filename = HashStrategy.Compute(locations).ToHexString() + ".css";
-
-            var link = document.CreateElement("link");
-
-            head.AppendChild(link);
-
-            link.SetAttribute("href", $"{VirtualApplicationPath}/{filename}");
-            link.SetAttribute("rel", "stylesheet");
-
-            var filepath = Path.Combine(PhysicalCachePath, filename);
-
-            if (File.Exists(filepath))
-            {
-                return;
-            }
-
-            string srcpath;
-
-            using (var output = new FileStream(filepath, FileMode.Create, FileAccess.Write))
-            {
-                foreach(var x in locations)
-                {
-                    srcpath = Path.Combine(PhysicalApplicationPath, x);
-
-                    using (var source = new FileStream(srcpath, FileMode.Open, FileAccess.Read))
-                    {
-                        await source.CopyToAsync(output, token);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Convert a given location to a string.
-        /// </summary>
-        /// <param name="location">An absolute URL or filepath or a relative filepath.</param>
-        /// <param name="client">
-        /// An HTTP client to use for requesting file contents from a web server.
+        /// <param name="container">
+        /// The containing element which the new element will be appended to as a child.
         /// </param>
-        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
-        /// <returns>A stream.</returns>
-        protected async Task<Stream> GetStreamAsync(string location, HttpClient client, CancellationToken token)
+        /// <param name="uri">
+        /// A value corresponding to the relative URI of the bundled resource.
+        /// </param>
+        protected override void AppendReplacementElement(XmlElement container, string uri)
         {
-            token.ThrowIfCancellationRequested();
+            var link = container.OwnerDocument.CreateElement("link");
 
-            if (location.StartsWith("http://") || location.StartsWith("https://"))
-            {
-                return await client.GetStreamAsync(location);
-            }
-            else
-            {
-                location = Path.Combine(PhysicalApplicationPath, location);
+            container.AppendChild(link);
 
-                return new FileStream(location, FileMode.Open, FileAccess.Read);
-            }
+            link.SetAttribute("href", uri);
+            link.SetAttribute("rel", "stylesheet");
+        }
+
+        /// <summary>
+        /// Qualify whether a given element is to be included in the bundle.
+        /// </summary>
+        /// <param name="element">An element to qualify for inclusion.</param>
+        /// <returns>
+        /// A value indicating whether or not the given element qualifies for bundling.
+        /// </returns>
+        protected override bool Qualified(XmlElement element)
+        {
+            return element.HasAttribute("href") && element.GetAttribute("href").EndsWith(".css");
         }
     }
 }
