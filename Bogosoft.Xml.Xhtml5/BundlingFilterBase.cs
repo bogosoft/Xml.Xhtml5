@@ -117,7 +117,7 @@ namespace Bogosoft.Xml.Xhtml5
                 {
                     target.RemoveAttribute("data-bundle");
 
-                    if (target.GetAttribute("data-bundle").Equals("true", StringComparison.OrdinalIgnoreCase))
+                    if (target.GetAttribute("data-bundle").Equals("false", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
