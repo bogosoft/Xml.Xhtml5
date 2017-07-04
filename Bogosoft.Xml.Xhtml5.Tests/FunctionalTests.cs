@@ -77,6 +77,76 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         }
 
         [TestCase]
+        public async Task ImageBundlingFilterWorksAsExpected()
+        {
+            var files = new[] { "one.jpeg", "two.png", "three.bmp", "four.gif" };
+
+            foreach (var x in files.Select(ToAbsolutePath))
+            {
+                if (File.Exists(x))
+                {
+                    File.Delete(x);
+                }
+
+                using (var stream = new FileStream(x, FileMode.Create, FileAccess.Write))
+                using (var writer = new StreamWriter(stream))
+                {
+                    await writer.WriteAsync("Not really binary image data.");
+                }
+            }
+
+            var test = new StringBuilder("<!DOCTYPE html><html><body>");
+
+            var document = new XmlDocument();
+
+            var body = document.AppendElement("html").AppendElement("body");
+
+            foreach (var x in files)
+            {
+                body.AppendElement("img").SetAttribute("src", x);
+
+                test.Append($@"<img src=""{x}""/>");
+            }
+
+            test.Append("</body></html>");
+
+            var formatter = new Xhtml5Formatter();
+
+            test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
+
+            var filter = new ImageBundlingFilter(
+                ToRelativeUri,
+                ToPhysicalPath,
+                ToBundledJsFilepath,
+                ToId,
+                FinalizeImageBundledDocument
+                );
+
+            formatter.With(filter);
+
+            test.Clear();
+
+            test.Append("<!DOCTYPE html><html><body>");
+
+            foreach(var x in files)
+            {
+                test.Append($@"<img data-id=""{ToId(x)}""/>");
+            }
+
+            var path = ToRelativeUri(ToBundledJsFilepath(files));
+
+            test.Append($@"<script src=""{path}""></script>");
+
+            test.Append(@"<script type=""text/javascript"">/* Rehydrate */</script></body></html>");
+
+            var actual = await formatter.ToStringAsync(document);
+
+            var expected = test.ToString();
+
+            expected.ShouldEqual(actual);
+        }
+
+        [TestCase]
         public async Task JavaScriptBundlingFilterCanBundleAtLeastTwoFiles()
         {
             var files = new[] { "one.js", "two.js" };
@@ -130,8 +200,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
             test.Append(ToRelativeUri(ToBundledJsFilepath(files)));
 
             test.Append(@"""></script></head></html>");
-            var expected = test.ToString();
-            var actual = await formatter.ToStringAsync(document);
+
             test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
         }
 
@@ -176,6 +245,19 @@ namespace Bogosoft.Xml.Xhtml5.Tests
             filtered.ShouldEqual($@"<!DOCTYPE html><html><head><link href=""{uri}""/></head></html>");
         }
 
+        static void FinalizeImageBundledDocument(XmlDocument document)
+        {
+            var body = document.SelectNodes("/html/body").Cast<XmlElement>().FirstOrDefault();
+
+            var script = document.CreateElement("script");
+
+            body.AppendChild(script);
+
+            script.SetAttribute("type", "text/javascript");
+
+            script.AppendChild(document.CreateTextNode("/* Rehydrate */"));
+        }
+
         static string ToAbsolutePath(string filename)
         {
             return Path.Combine(PhysicalCachePath, filename);
@@ -196,6 +278,11 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         static string ToBundledJsFilepath(IEnumerable<string> uris)
         {
             return ToBundledFilepath(uris, "js");
+        }
+
+        static string ToId(string uri)
+        {
+            return CryptoHashStrategy.MD5.Compute(uri).ToHexString();
         }
 
         static string ToPhysicalPath(string uri)

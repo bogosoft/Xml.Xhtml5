@@ -51,6 +51,8 @@
     <Compile Include="BundlingFilterBase.cs" />
     <Compile Include="CssBundlingFilter.cs" />
     <Compile Include="HttpContentExtensions.cs" />
+    <Compile Include="Image.cs" />
+    <Compile Include="ImageBundlingFilter.cs" />
     <Compile Include="JavaScriptBundlingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteFileCachingFilter.cs" />
