@@ -52,7 +52,7 @@
     <Compile Include="ImageBundlingTransformer.cs" />
     <Compile Include="JavaScriptBundlingTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteFileCachingFilter.cs" />
+    <Compile Include="RemoteFileCachingTransformer.cs" />
     <Compile Include="StreamExtensions.cs" />
     <Compile Include="TextWriterExtensions.cs" />
     <Compile Include="Xhtml5Formatter.cs" />

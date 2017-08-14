@@ -232,7 +232,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             unfiltered.ShouldEqual($@"<!DOCTYPE html><html><head><link href=""{Bootstrap}""/></head></html>");
 
-            var xformer = new RemoteFileCachingFilter(PhysicalCachePath, VirtualCachePath, "/html/head/link/@href");
+            var xformer = new RemoteFileCachingTransformer(PhysicalCachePath, VirtualCachePath, "/html/head/link/@href");
 
             formatter.Transformers.Add(xformer);
 

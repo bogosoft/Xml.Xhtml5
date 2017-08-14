@@ -14,7 +14,7 @@ namespace Bogosoft.Xml.Xhtml5
     /// copies them to a local cache path and replaces references to remote files with their
     /// cached counterpart paths. References to remote files are expected to be in attributes only.
     /// </summary>
-    public class RemoteFileCachingFilter : IDomTransformer
+    public class RemoteFileCachingTransformer : IDomTransformer
     {
         /// <summary>
         /// Get or set the absolute physical (local) path to a directory where locally
@@ -33,7 +33,7 @@ namespace Bogosoft.Xml.Xhtml5
         protected string XPath;
 
         /// <summary>
-        /// Create a new instance of the <see cref="RemoteFileCachingFilter"/>.
+        /// Create a new instance of the <see cref="RemoteFileCachingTransformer"/>.
         /// </summary>
         /// <param name="physicalCachePath">
         /// A value corresponding to the absolute physical (local) path to a directory where locally
@@ -45,7 +45,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// <param name="xpath">
         /// An XPath expression that will be used to select attributes to filter.
         /// </param>
-        public RemoteFileCachingFilter(string physicalCachePath, string virtualCachePath, string xpath)
+        public RemoteFileCachingTransformer(string physicalCachePath, string virtualCachePath, string xpath)
         {
             PhysicalCachePath = physicalCachePath;
             VirtualCachePath = virtualCachePath.TrimEnd('/');
@@ -53,7 +53,7 @@ namespace Bogosoft.Xml.Xhtml5
         }
 
         /// <summary>
-        /// Create a new instance of the <see cref="RemoteFileCachingFilter"/>.
+        /// Create a new instance of the <see cref="RemoteFileCachingTransformer"/>.
         /// </summary>
         /// <param name="physicalCachePath">
         /// A value corresponding to the absolute physical (local) path to a directory where locally
@@ -65,7 +65,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// <param name="xpaths">
         /// A sequence of XPath expressions that will be used to select attributes to filter.
         /// </param>
-        public RemoteFileCachingFilter(
+        public RemoteFileCachingTransformer(
             string physicalCachePath,
             string virtualCachePath,
             IEnumerable<string> xpaths
