@@ -5,7 +5,7 @@ using System.Xml;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// An XHTML5 document filter strategy that bundles multiple JavaScript files into a single file.
+    /// An XHTML5 transformation strategy that bundles multiple JavaScript files into a single file.
     /// </summary>
     public class JavascriptBundlingTransformer : BundlingTransformerBase
     {

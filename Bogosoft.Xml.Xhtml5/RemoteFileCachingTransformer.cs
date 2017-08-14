@@ -75,7 +75,7 @@ namespace Bogosoft.Xml.Xhtml5
         }
 
         /// <summary>
-        /// Apply the current DOM node transformation strategy to a given node.
+        /// Apply the current transformation strategy to a given node.
         /// </summary>
         /// <param name="node">A DOM node to transform.</param>
         /// <param name="token">A <see cref="CancellationToken"/> object.</param>

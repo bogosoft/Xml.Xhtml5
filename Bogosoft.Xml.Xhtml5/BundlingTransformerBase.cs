@@ -85,13 +85,11 @@ namespace Bogosoft.Xml.Xhtml5
         protected abstract void AppendReplacementElement(XmlElement container, string uri);
 
         /// <summary>
-        /// Filter a given XML document.
+        /// Apply the current transformation strategy to a given node.
         /// </summary>
-        /// <param name="node">A node to filter.</param>
+        /// <param name="node">A DOM node to transform.</param>
         /// <param name="token">A <see cref="CancellationToken"/> object.</param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation.
-        /// </returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task TransformAsync(XmlNode node, CancellationToken token)
         {
             var container = node.GetOwnerDocument()
