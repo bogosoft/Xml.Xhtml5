@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
-using Bogosoft.Mapping;
 
 namespace Bogosoft.Xml.Xhtml5
 {
@@ -44,9 +44,9 @@ namespace Bogosoft.Xml.Xhtml5
         /// An XPath expression that targets the element containing all script element to bundle.
         /// </param>
         public JavascriptBundlingTransformer(
-            Mapper<string, string> physicalPathToRelativeUriMapper,
-            Mapper<string, string> relativeUriToPhysicalPathMapper,
-            Mapper<IEnumerable<string>, string> bundledFilepathMapper,
+            Converter<string, string> physicalPathToRelativeUriMapper,
+            Converter<string, string> relativeUriToPhysicalPathMapper,
+            Converter<IEnumerable<string>, string> bundledFilepathMapper,
             string targettedContainerXPath
             )
             : base(physicalPathToRelativeUriMapper, relativeUriToPhysicalPathMapper, bundledFilepathMapper)

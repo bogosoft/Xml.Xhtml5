@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System;
 using System.Xml;
-using Bogosoft.Mapping;
 
 namespace Bogosoft.Xml.Xhtml5
 {
@@ -39,9 +39,9 @@ namespace Bogosoft.Xml.Xhtml5
         /// of a resource to bundle.
         /// </param>
         public CssBundlingTransformer(
-            Mapper<string, string> physicalPathToRelativeUriMapper,
-            Mapper<string, string> relativeUriToPhysicalPathMapper,
-            Mapper<IEnumerable<string>, string> bundledFilepathMapper
+            Converter<string, string> physicalPathToRelativeUriMapper,
+            Converter<string, string> relativeUriToPhysicalPathMapper,
+            Converter<IEnumerable<string>, string> bundledFilepathMapper
             )
             : base(physicalPathToRelativeUriMapper, relativeUriToPhysicalPathMapper, bundledFilepathMapper)
         {

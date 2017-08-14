@@ -1,5 +1,4 @@
-﻿using Bogosoft.Mapping;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// Get or set the mapping strategy responsible for generating an absolute filepath
         /// against a collection of source URI's.
         /// </summary>
-        protected Mapper<IEnumerable<string>, string> BundledFilepathMapper;
+        protected Converter<IEnumerable<string>, string> BundledFilepathMapper;
 
         /// <summary>
         /// Get or set a document finalizer to invoke once bundling has finished.
@@ -28,19 +27,19 @@ namespace Bogosoft.Xml.Xhtml5
         /// <summary>
         /// Get or set the mapping strategy responsible for generating an ID against a relative URI.
         /// </summary>
-        protected Mapper<string, string> IdMapper;
+        protected Converter<string, string> IdMapper;
 
         /// <summary>
         /// Get or set the mapping strategy responsible for converting a physical path on the
         /// local filesystem to a relative URI.
         /// </summary>
-        protected Mapper<string, string> PhysicalPathToRelativeUriMapper;
+        protected Converter<string, string> PhysicalPathToRelativeUriMapper;
 
         /// <summary>
         /// Get or set the mapping strategy responsible for converting a relative URI into a
         /// physical path on the local filesystem.
         /// </summary>
-        protected Mapper<string, string> RelativeUriToPhysicalPathMapper;
+        protected Converter<string, string> RelativeUriToPhysicalPathMapper;
 
         /// <summary>
         /// Create a new instance of the <see cref="ImageBundlingTransformer"/> class.
@@ -62,10 +61,10 @@ namespace Bogosoft.Xml.Xhtml5
         /// A strategy for finalizing an XHTML 5 document after bundling has completed.
         /// </param>
         public ImageBundlingTransformer(
-            Mapper<string, string> physicalPathToRelativeUriMapper,
-            Mapper<string, string> relativeUriToPhysicalPathMapper,
-            Mapper<IEnumerable<string>, string> bundledFilepathMapper,
-            Mapper<string, string> idMapper,
+            Converter<string, string> physicalPathToRelativeUriMapper,
+            Converter<string, string> relativeUriToPhysicalPathMapper,
+            Converter<IEnumerable<string>, string> bundledFilepathMapper,
+            Converter<string, string> idMapper,
             Action<XmlDocument> finalizer
             )
         {
@@ -98,7 +97,7 @@ namespace Bogosoft.Xml.Xhtml5
             {
                 uri = node.GetAttribute("src");
 
-                filepath = RelativeUriToPhysicalPathMapper.Map(uri);
+                filepath = RelativeUriToPhysicalPathMapper.Invoke(uri);
 
                 if (!File.Exists(filepath))
                 {
@@ -111,8 +110,8 @@ namespace Bogosoft.Xml.Xhtml5
 
                 var target = new Image
                 {
-                    Id = IdMapper.Map(uri),
-                    PhysicalPath = RelativeUriToPhysicalPathMapper.Map(uri),
+                    Id = IdMapper.Invoke(uri),
+                    PhysicalPath = RelativeUriToPhysicalPathMapper.Invoke(uri),
                     RelativeUri = uri
                 };
 
@@ -136,7 +135,7 @@ namespace Bogosoft.Xml.Xhtml5
                 return;
             }
 
-            var cachepath = BundledFilepathMapper.Map(targets.Select(x => x.RelativeUri));
+            var cachepath = BundledFilepathMapper.Invoke(targets.Select(x => x.RelativeUri));
 
             if (!File.Exists(cachepath))
             {
@@ -166,7 +165,7 @@ namespace Bogosoft.Xml.Xhtml5
 
             body.AppendChild(script);
 
-            script.SetAttribute("src", PhysicalPathToRelativeUriMapper.Map(cachepath));
+            script.SetAttribute("src", PhysicalPathToRelativeUriMapper.Invoke(cachepath));
 
             Finalizer.Invoke(document);
         }

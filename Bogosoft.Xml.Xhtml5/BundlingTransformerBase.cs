@@ -1,5 +1,4 @@
-﻿using Bogosoft.Mapping;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,19 +19,19 @@ namespace Bogosoft.Xml.Xhtml5
         /// Get or set the mapping strategy responsible for generating an absolute filepath
         /// against a collection of source URI's.
         /// </summary>
-        protected Mapper<IEnumerable<string>, string> BundledFilepathMapper;
+        protected Converter<IEnumerable<string>, string> BundledFilepathMapper;
 
         /// <summary>
         /// Get or set the mapping strategy responsible for converting a physical path on the
         /// local filesystem to a relative URI.
         /// </summary>
-        protected Mapper<string, string> PhysicalPathToRelativeUriMapper;
+        protected Converter<string, string> PhysicalPathToRelativeUriMapper;
 
         /// <summary>
         /// Get or set the mapping strategy responsible for converting a relative URI into a
         /// physical path on the local filesystem.
         /// </summary>
-        protected Mapper<string, string> RelativeUriToPhysicalPathMapper;
+        protected Converter<string, string> RelativeUriToPhysicalPathMapper;
 
         /// <summary>
         /// Get the name of the attribute on elements of the <see cref="TargettedElement"/> type
@@ -64,9 +63,9 @@ namespace Bogosoft.Xml.Xhtml5
         /// of a resource to bundle.
         /// </param>
         protected BundlingTransformerBase(
-            Mapper<string, string> physicalPathToRelativeUriMapper,
-            Mapper<string, string> relativeUriToPhysicalPathMapper,
-            Mapper<IEnumerable<string>, string> bundledFilepathMapper
+            Converter<string, string> physicalPathToRelativeUriMapper,
+            Converter<string, string> relativeUriToPhysicalPathMapper,
+            Converter<IEnumerable<string>, string> bundledFilepathMapper
             )
         {
             BundledFilepathMapper = bundledFilepathMapper;
