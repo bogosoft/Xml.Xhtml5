@@ -24,7 +24,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         static string TempPath = Environment.GetEnvironmentVariable("TEMP");
 
         [TestCase]
-        public async Task CssBundlingFilterWorksAsExpected()
+        public async Task CssBundlingTransformerWorksAsExpected()
         {
             var files = new[] { "one.css", "two.css", "three.css", "four.css" };
 
@@ -61,9 +61,9 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
 
-            var filter = new CssBundlingFilter(ToRelativeUri, ToPhysicalPath, ToBundledCssFilepath);
+            var xformer = new CssBundlingTransformer(ToRelativeUri, ToPhysicalPath, ToBundledCssFilepath);
 
-            formatter.With(filter);
+            formatter.Transformers.Add(xformer);
 
             test.Clear();
 
@@ -77,7 +77,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         }
 
         [TestCase]
-        public async Task ImageBundlingFilterWorksAsExpected()
+        public async Task ImageBundlingTransformerWorksAsExpected()
         {
             var files = new[] { "one.jpeg", "two.png", "three.bmp", "four.gif" };
 
@@ -114,7 +114,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
 
-            var filter = new ImageBundlingFilter(
+            var xformer = new ImageBundlingTransformer(
                 ToRelativeUri,
                 ToPhysicalPath,
                 ToBundledJsFilepath,
@@ -122,7 +122,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
                 FinalizeImageBundledDocument
                 );
 
-            formatter.With(filter);
+            formatter.Transformers.Add(xformer);
 
             test.Clear();
 
@@ -147,7 +147,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         }
 
         [TestCase]
-        public async Task JavaScriptBundlingFilterCanBundleAtLeastTwoFiles()
+        public async Task JavaScriptBundlingTransformerCanBundleAtLeastTwoFiles()
         {
             var files = new[] { "one.js", "two.js" };
 
@@ -184,14 +184,14 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             test.ToString().ShouldEqual(await formatter.ToStringAsync(document));
 
-            var filter = new JavascriptBundlingFilter(
+            var xformer = new JavascriptBundlingTransformer(
                 ToRelativeUri,
                 ToPhysicalPath,
                 ToBundledJsFilepath,
                 "/html/head"
                 );
 
-            formatter.With(filter);
+            formatter.Transformers.Add(xformer);
 
             test.Clear();
 
@@ -205,7 +205,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
         }
 
         [TestCase]
-        public async Task RemoteFileCachingFilterWorksAsExpected()
+        public async Task RemoteFileCachingTransformerWorksAsExpected()
         {
             var filepath = Path.Combine(PhysicalCachePath, Path.GetFileName(Bootstrap));
 
@@ -232,17 +232,17 @@ namespace Bogosoft.Xml.Xhtml5.Tests
 
             unfiltered.ShouldEqual($@"<!DOCTYPE html><html><head><link href=""{Bootstrap}""/></head></html>");
 
-            var filter = new RemoteFileCachingFilter(PhysicalCachePath, VirtualCachePath, "/html/head/link/@href");
+            var xformer = new RemoteFileCachingFilter(PhysicalCachePath, VirtualCachePath, "/html/head/link/@href");
 
-            formatter.With(filter);
+            formatter.Transformers.Add(xformer);
 
-            var filtered = await formatter.ToStringAsync(document);
+            var transformed = await formatter.ToStringAsync(document);
 
             File.Exists(filepath).ShouldBeTrue();
 
             var uri = $"{VirtualCachePath}/{Path.GetFileName(Bootstrap)}";
 
-            filtered.ShouldEqual($@"<!DOCTYPE html><html><head><link href=""{uri}""/></head></html>");
+            transformed.ShouldEqual($@"<!DOCTYPE html><html><head><link href=""{uri}""/></head></html>");
         }
 
         static void FinalizeImageBundledDocument(XmlDocument document)

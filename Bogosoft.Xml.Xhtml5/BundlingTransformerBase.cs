@@ -10,11 +10,11 @@ using System.Xml;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// An implementation of the <see cref="IFilterXml"/> contract which bundles the contents of similar
+    /// An implementation of the <see cref="IDomTransformer"/> contract which bundles the contents of similar
     /// files together, removes their references in the associated XHTML document, and adds a single reference
     /// to the bundled file. The bundled file is cached locally
     /// </summary>
-    public abstract class BundlingFilterBase : IFilterXml
+    public abstract class BundlingTransformerBase : IDomTransformer
     {
         /// <summary>
         /// Get or set the mapping strategy responsible for generating an absolute filepath
@@ -51,7 +51,7 @@ namespace Bogosoft.Xml.Xhtml5
         protected abstract string TargettedElement { get; }
 
         /// <summary>
-        /// Create a new instance of the <see cref="BundlingFilterBase"/> class.
+        /// Create a new instance of the <see cref="BundlingTransformerBase"/> class.
         /// </summary>
         /// <param name="physicalPathToRelativeUriMapper">
         /// A strategy for mapping a physical path on the local filesystem to a relative URI.
@@ -63,7 +63,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// A strategy for mapping a relative URI collection to the absolute filepath
         /// of a resource to bundle.
         /// </param>
-        protected BundlingFilterBase(
+        protected BundlingTransformerBase(
             Mapper<string, string> physicalPathToRelativeUriMapper,
             Mapper<string, string> relativeUriToPhysicalPathMapper,
             Mapper<IEnumerable<string>, string> bundledFilepathMapper
@@ -88,16 +88,17 @@ namespace Bogosoft.Xml.Xhtml5
         /// <summary>
         /// Filter a given XML document.
         /// </summary>
-        /// <param name="document">A document to filter.</param>
+        /// <param name="node">A node to filter.</param>
         /// <param name="token">A <see cref="CancellationToken"/> object.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation.
         /// </returns>
-        public async Task FilterAsync(XmlDocument document, CancellationToken token)
+        public async Task TransformAsync(XmlNode node, CancellationToken token)
         {
-            var container = document.SelectNodes(TargettedContainerXPath)
-                                    .Cast<XmlElement>()
-                                    .FirstOrDefault();
+            var container = node.GetOwnerDocument()
+                                .SelectNodes(TargettedContainerXPath)
+                                .Cast<XmlElement>()
+                                .FirstOrDefault();
 
             var targets = container.SelectNodes(TargettedElement)
                                    .Cast<XmlNode>()

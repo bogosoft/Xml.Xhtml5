@@ -10,11 +10,11 @@ using System.Xml;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// An XML document filter strategy that asynchronously downloads files from remote servers,
+    /// An DOM transformation strategy that asynchronously downloads files from remote servers,
     /// copies them to a local cache path and replaces references to remote files with their
     /// cached counterpart paths. References to remote files are expected to be in attributes only.
     /// </summary>
-    public class RemoteFileCachingFilter : IFilterXml
+    public class RemoteFileCachingFilter : IDomTransformer
     {
         /// <summary>
         /// Get or set the absolute physical (local) path to a directory where locally
@@ -75,19 +75,18 @@ namespace Bogosoft.Xml.Xhtml5
         }
 
         /// <summary>
-        /// Filter a given XML document.
+        /// Apply the current DOM node transformation strategy to a given node.
         /// </summary>
-        /// <param name="document">An XML document to filter.</param>
+        /// <param name="node">A DOM node to transform.</param>
         /// <param name="token">A <see cref="CancellationToken"/> object.</param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation.
-        /// </returns>
-        public async Task FilterAsync(XmlDocument document, CancellationToken token)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task TransformAsync(XmlNode node, CancellationToken token)
         {
-            var attributes = document.SelectNodes(XPath)
-                                     .Cast<XmlNode>()
-                                     .Where(x => x.NodeType == XmlNodeType.Attribute)
-                                     .Select(x => x as XmlAttribute);
+            var attributes = node.GetOwnerDocument()
+                                 .SelectNodes(XPath)
+                                 .Cast<XmlNode>()
+                                 .Where(x => x.NodeType == XmlNodeType.Attribute)
+                                 .Select(x => x as XmlAttribute);
 
             string filename, filepath, url;
 

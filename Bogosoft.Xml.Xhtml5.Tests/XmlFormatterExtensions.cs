@@ -9,7 +9,7 @@ namespace Bogosoft.Xml.Xhtml5.Tests
     internal static class XmlFormatterExtensions
     {
         internal static async Task<String> ToStringAsync(
-            this IFormatXml formatter,
+            this IDomFormatter formatter,
             XmlNode node,
             CancellationToken token = default(CancellationToken)
             )

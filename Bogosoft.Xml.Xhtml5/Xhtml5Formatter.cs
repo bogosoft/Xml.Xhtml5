@@ -8,10 +8,10 @@ using System.Xml;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// A specialized derived type of <see cref="IFormatXml"/> suited to correctly formatting
+    /// A specialized derived type of <see cref="IDomFormatter"/> suited to correctly formatting
     /// the XML serialization of HTML 5 (XHTML 5).
     /// </summary>
-    public class Xhtml5Formatter : StandardXmlFormatter
+    public class Xhtml5Formatter : StandardDomFormatter
     {
         /// <summary>
         /// Get an array of element names that indicate that their respective elements

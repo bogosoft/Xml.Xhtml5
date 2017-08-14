@@ -7,7 +7,7 @@ namespace Bogosoft.Xml.Xhtml5
     /// <summary>
     /// An XHTML5 document filter strategy that bundles multiple JavaScript files into a single file.
     /// </summary>
-    public class JavascriptBundlingFilter : BundlingFilterBase
+    public class JavascriptBundlingTransformer : BundlingTransformerBase
     {
         string targettedContainerXPath;
 
@@ -28,7 +28,7 @@ namespace Bogosoft.Xml.Xhtml5
         protected override string TargettedElement => "script";
 
         /// <summary>
-        /// Create a new instance of the <see cref="JavascriptBundlingFilter"/> class.
+        /// Create a new instance of the <see cref="JavascriptBundlingTransformer"/> class.
         /// </summary>
         /// <param name="physicalPathToRelativeUriMapper">
         /// A strategy for mapping a physical path on the local filesystem to a relative URI.
@@ -43,7 +43,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// <param name="targettedContainerXPath">
         /// An XPath expression that targets the element containing all script element to bundle.
         /// </param>
-        public JavascriptBundlingFilter(
+        public JavascriptBundlingTransformer(
             Mapper<string, string> physicalPathToRelativeUriMapper,
             Mapper<string, string> relativeUriToPhysicalPathMapper,
             Mapper<IEnumerable<string>, string> bundledFilepathMapper,

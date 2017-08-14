@@ -5,9 +5,9 @@ using Bogosoft.Mapping;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// An XHTML5 document filter strategy that bundles multiple CSS files into a single file.
+    /// An XHTML5 transformation strategy that bundles multiple CSS files into a single file.
     /// </summary>
-    public class CssBundlingFilter : BundlingFilterBase
+    public class CssBundlingTransformer : BundlingTransformerBase
     {
         /// <summary>
         /// Get the name of the attribute on elements of the <see cref="TargettedElement"/> type
@@ -26,7 +26,7 @@ namespace Bogosoft.Xml.Xhtml5
         protected override string TargettedElement => "link";
 
         /// <summary>
-        /// Create a new instance of the <see cref="CssBundlingFilter"/> class.
+        /// Create a new instance of the <see cref="CssBundlingTransformer"/> class.
         /// </summary>
         /// <param name="physicalPathToRelativeUriMapper">
         /// A strategy for mapping a physical path on the local filesystem to a relative URI.
@@ -38,7 +38,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// A strategy for mapping a relative URI collection to the absolute filepath
         /// of a resource to bundle.
         /// </param>
-        public CssBundlingFilter(
+        public CssBundlingTransformer(
             Mapper<string, string> physicalPathToRelativeUriMapper,
             Mapper<string, string> relativeUriToPhysicalPathMapper,
             Mapper<IEnumerable<string>, string> bundledFilepathMapper

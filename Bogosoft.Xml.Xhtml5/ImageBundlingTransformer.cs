@@ -10,9 +10,9 @@ using System.Xml;
 namespace Bogosoft.Xml.Xhtml5
 {
     /// <summary>
-    /// An implementation of the <see cref="IFilterXml"/> contract which bundles images.
+    /// An implementation of the <see cref="IDomTransformer"/> contract which bundles images.
     /// </summary>
-    public class ImageBundlingFilter : IFilterXml
+    public class ImageBundlingTransformer : IDomTransformer
     {
         /// <summary>
         /// Get or set the mapping strategy responsible for generating an absolute filepath
@@ -43,7 +43,7 @@ namespace Bogosoft.Xml.Xhtml5
         protected Mapper<string, string> RelativeUriToPhysicalPathMapper;
 
         /// <summary>
-        /// Create a new instance of the <see cref="ImageBundlingFilter"/> class.
+        /// Create a new instance of the <see cref="ImageBundlingTransformer"/> class.
         /// </summary>
         /// <param name="physicalPathToRelativeUriMapper">
         /// A strategy for mapping a physical path on the local filesystem to a relative URI.
@@ -61,7 +61,7 @@ namespace Bogosoft.Xml.Xhtml5
         /// <param name="finalizer">
         /// A strategy for finalizing an XHTML 5 document after bundling has completed.
         /// </param>
-        public ImageBundlingFilter(
+        public ImageBundlingTransformer(
             Mapper<string, string> physicalPathToRelativeUriMapper,
             Mapper<string, string> relativeUriToPhysicalPathMapper,
             Mapper<IEnumerable<string>, string> bundledFilepathMapper,
@@ -77,14 +77,12 @@ namespace Bogosoft.Xml.Xhtml5
         }
 
         /// <summary>
-        /// Filter a given XML document.
+        /// Apply a DOM node transformation strategy to a given document.
         /// </summary>
-        /// <param name="document">A document to filter.</param>
+        /// <param name="document">A DOM document to transform.</param>
         /// <param name="token">A <see cref="CancellationToken"/> object.</param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation.
-        /// </returns>
-        public async Task FilterAsync(XmlDocument document, CancellationToken token)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        protected async Task TransformAsync(XmlDocument document, CancellationToken token)
         {
             var body = document.SelectNodes("/html/body").Cast<XmlElement>().FirstOrDefault();
 
@@ -171,6 +169,17 @@ namespace Bogosoft.Xml.Xhtml5
             script.SetAttribute("src", PhysicalPathToRelativeUriMapper.Map(cachepath));
 
             Finalizer.Invoke(document);
+        }
+
+        /// <summary>
+        /// Apply a DOM node transformation strategy to a given node.
+        /// </summary>
+        /// <param name="node">A DOM node to transform.</param>
+        /// <param name="token">A <see cref="CancellationToken"/> object.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public Task TransformAsync(XmlNode node, CancellationToken token)
+        {
+            return TransformAsync(node is XmlDocument ? node as XmlDocument : node.OwnerDocument, token);
         }
     }
 }
